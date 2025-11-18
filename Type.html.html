@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Speed Test</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f4f8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 30px;
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .text-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        width: 90%;
+        max-width: 600px;
+        margin-bottom: 20px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    .text-container span.correct {
+        color: green;
+    }
+    .text-container span.incorrect {
+        color: red;
+    }
+    input[type="text"] {
+        width: 90%;
+        max-width: 600px;
+        padding: 10px;
+        font-size: 18px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    .stats {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background: #007BFF;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        background: #0056b3;
+    }
+</style>
+</head>
+<body>
+<h1>Typing Speed Test</h1>
+<div class="text-container" id="textContainer"></div>
+<input type="text" id="inputBox" placeholder="Start typing here...">
+<div class="stats" id="stats">Time: 0s | WPM: 0 | Accuracy: 100%</div>
+<button onclick="resetTest()">Reset Test</button>
+
+<script>
+const texts = [
+    "Typing speed tests are a fun way to improve your typing skills.",
+    "Practice makes perfect. The more you type, the faster you get.",
+    "Javascript is powerful for creating interactive web projects.",
+    "Keep calm and code on. Mistakes are part of learning."
+];
+
+let currentText = "";
+let startTime;
+let totalTyped = 0;
+let correctTyped = 0;
+
+const textContainer = document.getElementById('textContainer');
+const inputBox = document.getElementById('inputBox');
+const stats = document.getElementById('stats');
+
+function loadText() {
+    currentText = texts[Math.floor(Math.random() * texts.length)];
+    textContainer.innerHTML = "";
+    currentText.split("").forEach(char => {
+        const span = document.createElement("span");
+        span.innerText = char;
+        textContainer.appendChild(span);
+    });
+    inputBox.value = "";
+    totalTyped = 0;
+    correctTyped = 0;
+    startTime = null;
+    stats.innerText = `Time: 0s | WPM: 0 | Accuracy: 100%`;
+}
+
+inputBox.addEventListener('input', () => {
+    if(!startTime) startTime = new Date();
+    const input = inputBox.value;
+    totalTyped = input.length;
+
+    const spans = textContainer.querySelectorAll('span');
+    correctTyped = 0;
+    spans.forEach((span, idx) => {
+        const char = input[idx];
+        if(char == null){
+            span.classList.remove('correct', 'incorrect');
+        } else if(char === span.innerText) {
+            span.classList.add('correct');
+            span.classList.remove('incorrect');
+            correctTyped++;
+        } else {
+            span.classList.add('incorrect');
+            span.classList.remove('correct');
+        }
+    });
+
+    const elapsedTime = (new Date() - startTime) / 1000; // seconds
+    const wordsTyped = input.split(" ").filter(word => word !== "").length;
+    const wpm = Math.round((wordsTyped / elapsedTime) * 60);
+    const accuracy = totalTyped === 0 ? 100 : Math.round((correctTyped / totalTyped) * 100);
+
+    stats.innerText = `Time: ${Math.round(elapsedTime)}s | WPM: ${wpm} | Accuracy: ${accuracy}%`;
+});
+
+function resetTest() {
+    loadText();
+}
+
+window.onload = loadText;
+</script>
+</body>
+</html>
